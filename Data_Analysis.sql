@@ -46,3 +46,46 @@ quantity IS NULL;
 SELECT DISTINCT category
 FROM zepto
 ORDER BY category;
+
+--products in stock vs out of stock
+SELECT outOfStock, COUNT(sku_id)
+FROM zepto
+GROUP BY outOfStock;
+
+--product names present multiple times
+SELECT name, COUNT(sku_id) AS "Number of SKUs"
+FROM zepto
+GROUP BY name
+HAVING count(sku_id) > 1
+ORDER BY count(sku_id) DESC;
+
+--data cleaning
+
+--products with price = 0
+SELECT * FROM zepto
+WHERE mrp = 0 OR discountedSellingPrice = 0;
+
+DELETE FROM zepto
+WHERE mrp = 0;
+
+--convert paise to rupees
+UPDATE zepto
+SET mrp = mrp / 100.0,
+discountedSellingPrice = discountedSellingPrice / 100.0;
+
+SELECT mrp, discountedSellingPrice FROM zepto;
+
+--data analysis
+
+-- Q1. Find the top 10 best-value products based on the discount percentage.
+SELECT DISTINCT name, mrp, discountPercent
+FROM zepto
+ORDER BY discountPercent DESC
+LIMIT 10;
+
+--Q2.What are the Products with High MRP but Out of Stock
+
+SELECT DISTINCT name,mrp
+FROM zepto
+WHERE outOfStock = TRUE and mrp > 300
+ORDER BY mrp DESC;
